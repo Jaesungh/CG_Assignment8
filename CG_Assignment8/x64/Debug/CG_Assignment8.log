@@ -1,10 +1,17 @@
 ﻿  frame_timer.cpp
+  init_vertex_array.cpp
+  load_mesh.cpp
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(53,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(54,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(55,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(62,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(63,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\load_mesh.cpp(64,21): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   main.cpp
   코드를 생성하고 있습니다...
   CG_Assignment8.vcxproj -> C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\x64\Debug\CG_Assignment8.exe
   'pwsh.exe' is not recognized as an internal or external command,
   operable program or batch file.
-  Loaded mesh from bunny.obj. (35947 vertices, 35947 normals, 69451 triangles)
-  Mesh bounding box is: (-0.0947, 0.0330, -0.0619) to (0.0610, 0.1873, 0.0588)
+  Loaded mesh from bunny.obj. (35947 vertices, 35947 normals, 69451 triangles)\nBounding box: (-0.0947,0.0330,-0.0619) to (0.0610,0.1873,0.0588)\n
   C:\Users\jason\Desktop\Cpp_assignment\CG_Assignment8\bunny.obj
   1 File(s) copied

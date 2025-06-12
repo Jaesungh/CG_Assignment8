@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="frame_timer.cpp" />
+    <ClCompile Include="init_vertex_array.cpp" />
     <ClCompile Include="load_mesh.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -28,6 +29,11 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="frame_timer.h" />
+    <ClInclude Include="init_vertex_array.h" />
+    <ClInclude Include="load_mesh.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

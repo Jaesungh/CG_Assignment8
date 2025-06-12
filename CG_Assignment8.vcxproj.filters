@@ -24,10 +24,24 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="init_vertex_array.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Object Include="bunny.obj">
       <Filter>소스 파일</Filter>
     </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="load_mesh.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="frame_timer.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="init_vertex_array.h">
+      <Filter>소스 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

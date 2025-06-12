@@ -1,148 +1,83 @@
-/*
-	How to use this code:
-
-	Call load_mesh("bunny.obj") after creating the window using GLUT. This will
-	read the mesh data from bunny.obj and populate the arrays gPositions,
-	gNormals, and gTriangles.
-
-	When rendering, we use a similar convention to the sphere from PA2. In other
-	words, for triangle i, define:
-
-		k0 = gTriangles[i].indices[0];
-		k1 = gTriangles[i].indices[1];
-		k2 = gTriangles[i].indices[2];
-
-	Then the vertices of the triangle are at gPositions[k0], gPositions[k1], and
-	gPositions[k2], in that order. The normals of the corresponding vertices are
-	at gNormals[k0], gNormals[k1], and gNormals[k2], in that order.
-
-	For the second part of the assignment, you have to copy the gPositions,
-	gNormals, and gTriangles arrays into GPU memory.
-*/
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
-#include <string.h>
-#include <string>
-#include <vector>
-#include <queue>
+#include "load_mesh.h"
 #include <fstream>
-#include <float.h>
+#include <float.h>        
+#include <cstdlib>        
+#include <algorithm>        
+#include <cstring>          
+#include <cstdio>
 
-struct Vector3
-{
-	float			x, y, z;
-};
+std::vector<Vector3>  gPositions;
+std::vector<Vector3>  gNormals;
+std::vector<Triangle> gTriangles;
 
-struct Triangle
-{
-	unsigned int 	indices[3];
-};
 
-std::vector<Vector3>	gPositions;
-std::vector<Vector3>	gNormals;
-std::vector<Triangle>	gTriangles;
-
-void tokenize(char* string, std::vector<std::string>& tokens, const char* delimiter)
-{
-	char* token = strtok(string, delimiter);
-	while (token != NULL)
-	{
-		tokens.push_back(std::string(token));
-		token = strtok(NULL, delimiter);
-	}
+static void tokenize(char* str, std::vector<std::string>& tokens, const char* delim) {
+    char* tok = std::strtok(str, delim);
+    while (tok) {
+        tokens.emplace_back(tok);
+        tok = std::strtok(nullptr, delim);
+    }
 }
 
-int face_index(const char* string)
-{
-	int length = strlen(string);
-	char* copy = new char[length + 1];
-	memset(copy, 0, length + 1);
-	strcpy(copy, string);
-
-	std::vector<std::string> tokens;
-	tokenize(copy, tokens, "/");
-	delete[] copy;
-	if (tokens.front().length() > 0 && tokens.back().length() > 0 && atoi(tokens.front().c_str()) == atoi(tokens.back().c_str()))
-	{
-		return atoi(tokens.front().c_str());
-	}
-	else
-	{
-		printf("ERROR: Bad face specifier!\n");
-		exit(0);
-	}
+static int face_index(const char* s) {
+    return std::atoi(s);  
 }
 
-void load_mesh(std::string fileName)
-{
-	std::ifstream fin(fileName.c_str());
-	if (!fin.is_open())
-	{
-		printf("ERROR: Unable to load mesh from %s!\n", fileName.c_str());
-		exit(0);
-	}
 
-	float xmin = FLT_MAX;
-	float xmax = -FLT_MAX;
-	float ymin = FLT_MAX;
-	float ymax = -FLT_MAX;
-	float zmin = FLT_MAX;
-	float zmax = -FLT_MAX;
+void load_mesh(const std::string& fileName) {
+    std::ifstream fin(fileName);
+    if (!fin.is_open()) {
+        std::fprintf(stderr, "ERROR: Unable to load mesh from %s\n", fileName.c_str());
+        std::exit(1);
+    }
 
-	while (true)
-	{
-		char line[1024] = { 0 };
-		fin.getline(line, 1024);
 
-		if (fin.eof())
-			break;
+    gPositions.clear();
+    gNormals.clear();
+    gTriangles.clear();
 
-		if (strlen(line) <= 1)
-			continue;
 
-		std::vector<std::string> tokens;
-		tokenize(line, tokens, " ");
+    float xmin = FLT_MAX, xmax = -FLT_MAX;
+    float ymin = FLT_MAX, ymax = -FLT_MAX;
+    float zmin = FLT_MAX, zmax = -FLT_MAX;
 
-		if (tokens[0] == "v")
-		{
-			float x = atof(tokens[1].c_str());
-			float y = atof(tokens[2].c_str());
-			float z = atof(tokens[3].c_str());
+    char line[1024];
+    while (fin.getline(line, sizeof(line))) {
+        if (std::strlen(line) <= 1) continue;
+        std::vector<std::string> tokens;
+        tokenize(line, tokens, " ");
 
-			xmin = std::min(x, xmin);
-			xmax = std::max(x, xmax);
-			ymin = std::min(y, ymin);
-			ymax = std::max(y, ymax);
-			zmin = std::min(z, zmin);
-			zmax = std::max(z, zmax);
+        if (tokens[0] == "v") {
+            float x = std::atof(tokens[1].c_str());
+            float y = std::atof(tokens[2].c_str());
+            float z = std::atof(tokens[3].c_str());
+            xmin = std::min(x, xmin); xmax = std::max(x, xmax);
+            ymin = std::min(y, ymin); ymax = std::max(y, ymax);
+            zmin = std::min(z, zmin); zmax = std::max(z, zmax);
+            gPositions.push_back({ x,y,z });
+        }
+        else if (tokens[0] == "vn") {
+            float x = std::atof(tokens[1].c_str());
+            float y = std::atof(tokens[2].c_str());
+            float z = std::atof(tokens[3].c_str());
+            gNormals.push_back({ x,y,z });
+        }
+        else if (tokens[0] == "f") {
+            unsigned int a = face_index(tokens[1].c_str()) - 1;
+            unsigned int b = face_index(tokens[2].c_str()) - 1;
+            unsigned int c = face_index(tokens[3].c_str()) - 1;
+            gTriangles.push_back({ {a,b,c} });
+        }
+    }
+    fin.close();
 
-			Vector3 position = { x, y, z };
-			gPositions.push_back(position);
-		}
-		else if (tokens[0] == "vn")
-		{
-			float x = atof(tokens[1].c_str());
-			float y = atof(tokens[2].c_str());
-			float z = atof(tokens[3].c_str());
-			Vector3 normal = { x, y, z };
-			gNormals.push_back(normal);
-		}
-		else if (tokens[0] == "f")
-		{
-			unsigned int a = face_index(tokens[1].c_str());
-			unsigned int b = face_index(tokens[2].c_str());
-			unsigned int c = face_index(tokens[3].c_str());
-			Triangle triangle;
-			triangle.indices[0] = a - 1;
-			triangle.indices[1] = b - 1;
-			triangle.indices[2] = c - 1;
-			gTriangles.push_back(triangle);
-		}
-	}
-
-	fin.close();
-
-	printf("Loaded mesh from %s. (%lu vertices, %lu normals, %lu triangles)\n", fileName.c_str(), gPositions.size(), gNormals.size(), gTriangles.size());
-	printf("Mesh bounding box is: (%0.4f, %0.4f, %0.4f) to (%0.4f, %0.4f, %0.4f)\n", xmin, ymin, zmin, xmax, ymax, zmax);
+    std::printf("Loaded mesh from %s. (%zu vertices, %zu normals, %zu triangles)\\n",
+        fileName.c_str(),
+        gPositions.size(),
+        gNormals.size(),
+        gTriangles.size());
+    std::printf("Bounding box: (%.4f,%.4f,%.4f) to (%.4f,%.4f,%.4f)\\n",
+        xmin, ymin, zmin, xmax, ymax, zmax);
 }
